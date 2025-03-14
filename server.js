@@ -6,6 +6,8 @@ import config from "./config.js";
 import productRoute from "./routers/productRouter.js";
 import userRouter from "./routers/userRouter.js";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
+
 const app = express();
 const mongodbUrl = config.MONGODB_URL;
 mongoose
@@ -16,6 +18,8 @@ mongoose
   })
   .catch((error) => console.log(error.reason));
 app.use(bodyParser.json());
+app.use(cookieParser());
+
 app.use("/api/products", productRoute);
 app.use("/api/users", userRouter);
 app.listen(config.PORT, "0.0.0.0", () => {

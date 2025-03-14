@@ -1,0 +1,24 @@
+
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Node.js backend",
+        "type": "node",
+        "request": "launch",
+        // "runtimeArgs": ["--inspect-brk=0.0.0.0:9299"],
+        "program": "${workspaceFolder}/server.js",
+        "restart": true, // 代码改动后自动重启
+        "skipFiles": ["<node_internals>/**"]
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Node.js",
+        "configurations": [ "Launch Node.js backend"]
+      }
+    ]
+  }
+  
+  
+  

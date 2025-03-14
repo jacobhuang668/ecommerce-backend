@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import config from "./config.js";
+import crypto from "crypto";
 //generating token
 const getToken = (user) => {
   return jwt.sign(
@@ -38,5 +39,42 @@ const isAdmin = (req, res, next) => {
   }
   return res.status(401).send({ message: "Admin Token is not valid." });
 };
+// 加密函数
+const encrptToken = (token) => {
+  const cipher = crypto.createCipher("aes-256-cbc", config.encryptionKey);
+  let encrypted = cipher.update(token, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return encrypted;
+};
 
-export { getToken, isAuth, isAdmin };
+// 解密函数
+const decryptToken = (encryptedToken) => {
+  const decipher = crypto.createDecipher("aes-256-cbc", config.encryptionKey);
+  let decrypted = decipher.update(encryptedToken, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+};
+const verify = (encryptedToken) => {
+  const token = decryptToken(encryptedToken);
+  const decoded = jwt.verify(token, config.JWT_SECRET);
+  return decoded;
+};
+
+// 中间件：验证 token
+const authMiddleware = (req, res, next) => {
+  const encryptedToken = req.cookies.token;
+  if (!encryptedToken) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const token = decryptToken(encryptedToken);
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    req.user = decoded; // 存用户信息供后续使用
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+export { getToken, isAuth, isAdmin, encrptToken, decryptToken, verify };

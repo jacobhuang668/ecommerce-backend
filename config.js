@@ -8,4 +8,5 @@ export default {
   PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID || "sb", //PayPal 的客户端 ID，用于与 PayPal 集成。默认值为 sb（通常表示 sandbox 测试模式）。用途：配置支付网关。
   accessKeyId: process.env.accessKeyId || "accessKeyId", //AWS 服务的访问密钥 ID。
   secretAccessKey: process.env.secretAccessKey || "secretAccessKey", //AWS 服务的访问密钥。
+  encryptionKey: "kill250pig",
 };

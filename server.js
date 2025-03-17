@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import config from "./config.js";
 import productRoute from "./routers/productRouter.js";
 import userRouter from "./routers/userRouter.js";
+import orderRouter from "./routers/orderRouter.js";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 app.use("/api/products", productRoute);
 app.use("/api/users", userRouter);
+app.use("/api/orders", orderRouter);
 app.listen(config.PORT, "0.0.0.0", () => {
   console.log(`Server started at http://localhost:${config.PORT}`);
 });

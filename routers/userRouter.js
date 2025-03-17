@@ -7,7 +7,6 @@ import {
   verify,
 } from "../util.js";
 import userModel from "../models/userModel.js";
-
 const router = express.Router();
 router.post("/signin/", async (req, res) => {
   try {
@@ -24,13 +23,7 @@ router.post("/signin/", async (req, res) => {
         jwtToken: getToken(user),
       };
       const encrptTokens = encrptToken(JSON.stringify(objToken));
-      res.cookie("token", encrptTokens, {
-        // httpOnly: true, // 防 XSS
-        // secure: process.env.NODE_ENV === "production", // 生产环境用 HTTPS
-        maxAge: 1 * 24 * 60 * 60 * 1000, // 1 天
-        sameSite: "strict", // 防 CSRF
-      });
-      res.status(200).send(objToken);
+      res.status(200).send({ encrptTokens });
     } else {
       res.status(401).send({ message: "Invalid Email or Password." });
     }
@@ -48,8 +41,21 @@ router.post("/verify", (req, res) => {
 
   try {
     const token = decryptToken(encryptedToken); // 解密
-    //const decoded = jwt.verify(token, config.jwtSecret); // 验证 JWT
-    res.status(200).json(JSON.parse(token)); // 返回明文信息
+    res.status(200).json(JSON.parse(token)); // 返回明文对象信息
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+router.post("/logout", (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const encryptedToken = authHeader.split(" ")[1];
+    decryptToken(encryptedToken);
+    res.clearCookie("token");
+    res.status(200).json({ message: "token deleted" });
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });
   }

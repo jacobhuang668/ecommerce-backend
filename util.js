@@ -62,19 +62,26 @@ const verify = (encryptedToken) => {
 
 // 中间件：验证 token
 const authMiddleware = (req, res, next) => {
-  const encryptedToken = req.cookies.token;
-  if (!encryptedToken) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-
+  const encryptedToken = authHeader.split(" ")[1];
   try {
     const token = decryptToken(encryptedToken);
-    const decoded = jwt.verify(token, config.JWT_SECRET);
-    req.user = decoded; // 存用户信息供后续使用
+    req.user = JSON.parse(token);
     next();
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });
   }
 };
 
-export { getToken, isAuth, isAdmin, encrptToken, decryptToken, verify };
+export {
+  getToken,
+  isAuth,
+  isAdmin,
+  encrptToken,
+  decryptToken,
+  verify,
+  authMiddleware,
+};
